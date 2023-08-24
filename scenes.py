@@ -6,14 +6,14 @@ from typing import Protocol
 
 import pygame
 
-from elements import Fond, Objet, Personnage
+from elements import Objet, Personnage, Vies
 from texte import Bouton, Message
 
 
 class Scene(Protocol):
     """Scène du jeu"""
 
-    def affiche_scene(self, fenetre: pygame.Surface) -> None:
+    def affiche_scene(self) -> None:
         ...
 
     def joue_tour(self) -> None:
@@ -26,12 +26,14 @@ class Scene(Protocol):
 class Partie:
     """Partie de catapulte"""
 
-    # TODO afficher le score et les vies
+    def __init__(self) -> None:
+        largeur, hauteur = pygame.display.get_window_size()
 
-    def __init__(self, largeur: int, hauteur: int) -> None:
-        self.decors: Fond = Fond("jungle.png", largeur, hauteur)
-        self.catapulte: Objet = Objet("catapulte.png", 400, 120, 560)
-        self.singe: Personnage = Personnage(150, 280, 10)
+        self.decors: Objet = Objet(
+            "jungle.png", largeur // 2, hauteur, largeur
+        )
+        self.catapulte: Objet = Objet("catapulte.png", 120, 560, 400)
+        self.singe: Personnage = Personnage(150, 280, 40, 10)
         self.bananes: pygame.sprite.Group = pygame.sprite.Group()
         self.pilliers: list[pygame.Rect] = []
 
@@ -41,27 +43,27 @@ class Partie:
             rectangle.bottom = 550
             self.pilliers.append(rectangle)
             self.bananes.add(
-                Objet("banane.png", 30, rectangle.centerx, rectangle.top - 5)
+                Objet("banane.png", rectangle.centerx, rectangle.top - 5, 30)
             )
 
-        self.vies = 5
-        self.points = 0
+        self.points: int = 0
+        self.vies: Vies = Vies(5)
 
-        self.largeur = largeur
-        self.hauteur = hauteur
-
-    def affiche_scene(self, fenetre: pygame.Surface) -> None:
+    def affiche_scene(self) -> None:
         """Affiche les éléments du jeu"""
-        vert = pygame.Color(33, 73, 59)
-        noir = pygame.Color(0, 0, 0)
+        fenetre = pygame.display.get_surface()
+
+        couleur_pilliers = pygame.Color(33, 73, 59)
+        couleur_bordure = pygame.Color(0, 0, 0)
 
         fenetre.blit(self.decors.image, self.decors.rect)
         for rectangle in self.pilliers:
-            pygame.draw.rect(fenetre, vert, rectangle)
-            pygame.draw.rect(fenetre, noir, rectangle, 1)
+            pygame.draw.rect(fenetre, couleur_pilliers, rectangle)
+            pygame.draw.rect(fenetre, couleur_bordure, rectangle, 1)
         self.bananes.draw(fenetre)
         fenetre.blit(self.catapulte.image, self.catapulte.rect)
         fenetre.blit(self.singe.image, self.singe.rect)
+        self.vies.affiche(20, 20)
 
     def joue_tour(self) -> None:
         """Joue un tour du jeu"""
@@ -73,9 +75,9 @@ class Partie:
             self.points += 1
 
         # fin de catapultage
-        if self.singe.sort_fenetre(self.largeur, self.hauteur):
+        if self.singe.sort_fenetre():
             self.singe.revient_depart()
-            self.vies -= 1
+            self.vies.perd(1)
 
     def passe_suivant(self) -> bool:
         """et renvoie si la partie est terminée"""
@@ -84,7 +86,7 @@ class Partie:
     @property
     def perdu(self) -> bool:
         """partie perdue"""
-        return self.vies == 0
+        return self.vies.mort
 
     @property
     def gagne(self) -> bool:
@@ -97,26 +99,37 @@ class Fin:
 
     # TODO distinguer victoire/défaite
 
-    def __init__(self, largeur: int, hauteur: int) -> None:
-        self.fond_fin: Fond = Fond("jungle.png", largeur, hauteur)
-        self.message_gagne: Message = Message("Gagné !", "Avdira.otf", 100)
-        self.rejouer: Bouton = Bouton(Message("Rejouer", "Avdira.otf", 50))
-        self.hauteur: int = hauteur
+    def __init__(self, victoire: bool) -> None:
+        largeur, hauteur = pygame.display.get_window_size()
 
-    def affiche_scene(self, fenetre: pygame.Surface) -> None:
+        self.decors: Objet = Objet(
+            "jungle.png", largeur // 2, hauteur, largeur
+        )
+        self.message_fin: Message = (
+            Message("Gagné !", "Avdira.otf", 100)
+            if victoire
+            else Message("Perdu ...", "Avdira.otf", 100)
+        )
+        self.bouton_rejouer: Bouton = Bouton(
+            Message("Rejouer", "Avdira.otf", 50)
+        )
+
+    def affiche_scene(self) -> None:
         """Affiche la scène de fin"""
+        fenetre = pygame.display.get_surface()
+        _, hauteur = pygame.display.get_window_size()
         blanc = pygame.Color(255, 255, 255)
         jaune = pygame.Color(255, 255, 0)
         noir = pygame.Color(0, 0, 0)
 
-        fenetre.blit(self.fond_fin.image, self.fond_fin.rect)
-        self.message_gagne.affiche(fenetre, blanc, self.hauteur // 2, 150)
-        couleur = jaune if self.rejouer.touche_souris() else blanc
-        self.rejouer.affiche(fenetre, couleur, noir, self.hauteur // 2, 400)
+        fenetre.blit(self.decors.image, self.decors.rect)
+        self.message_fin.affiche(blanc, hauteur // 2, 150)
+        couleur = jaune if self.bouton_rejouer.touche_souris() else blanc
+        self.bouton_rejouer.affiche(couleur, noir, hauteur // 2, 400)
 
     def joue_tour(self) -> None:
-        """Joue un tour de jeu"""
+        """Rien"""
 
     def passe_suivant(self) -> bool:
         """Vérifie si le bouton rejouer est cliqué"""
-        return self.rejouer.est_clique()
+        return self.bouton_rejouer.est_clique()

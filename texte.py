@@ -2,8 +2,6 @@
 Gestion du texte et des boutons
 """
 
-# TODO update
-
 import pygame
 
 
@@ -21,21 +19,21 @@ class Message:
         self.rect: pygame.Rect = self.surface.get_rect()
 
     def genere_surface(
-        self, couleur: pygame.Color, x_center: int, y_center: int
+        self, couleur: pygame.Color, centerx: int, centery: int
     ):
         """Génère le message"""
         self.surface = self.police.render(self.texte, True, couleur)
-        self.rect = self.surface.get_rect(center=(x_center, y_center))
+        self.rect = self.surface.get_rect(center=(centerx, centery))
 
     def affiche(
         self,
-        fenetre: pygame.Surface,
         couleur: pygame.Color,
-        x_center: int,
-        y_center: int,
+        centerx: int,
+        centery: int,
     ) -> None:
         """Affiche le message sur la fenêtre"""
-        self.genere_surface(couleur, x_center, y_center)
+        fenetre = pygame.display.get_surface()
+        self.genere_surface(couleur, centerx, centery)
         fenetre.blit(self.surface, self.rect)
 
 
@@ -50,18 +48,18 @@ class Bouton:
 
     def affiche(
         self,
-        fenetre: pygame.Surface,
         couleur: pygame.Color,
         couleur_fond: pygame.Color,
-        x_center: int,
-        y_center: int,
+        centerx: int,
+        centery: int,
     ) -> None:
         """Affiche le message sur la fenêtre"""
-        self.message.genere_surface(couleur, x_center, y_center)
+        fenetre = pygame.display.get_surface()
+        self.message.genere_surface(couleur, centerx, centery)
         self.bouton = self.message.rect.inflate(15, 15)
-        self.bouton.center = (x_center, y_center)
+        self.bouton.center = (centerx, centery)
         pygame.draw.rect(fenetre, couleur_fond, self.bouton, border_radius=20)
-        self.message.affiche(fenetre, couleur, x_center, y_center)
+        self.message.affiche(couleur, centerx, centery)
 
     def touche_souris(self) -> bool:
         """Détermine si la souris touche le bouton"""
@@ -69,7 +67,4 @@ class Bouton:
 
     def est_clique(self) -> bool:
         """Détermine si on clique sur le bouton"""
-        return self.touche_souris() and any(
-            evenement.type == pygame.MOUSEBUTTONDOWN
-            for evenement in pygame.event.get()
-        )
+        return self.touche_souris() and pygame.mouse.get_pressed()[0]

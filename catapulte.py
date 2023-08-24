@@ -29,16 +29,14 @@ class Fenetre:
 
         # état
         self.scenes: list = [Partie, Fin]
-        self.scene_courante: Scene = Partie(self.largeur, self.hauteur)
+        self.scene_courante: Scene = Partie()
         self.no_scene: int = 0
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
     def scene_suivante(self):
         """Passe à la scène suivante"""
         self.no_scene += 1
-        self.scene_courante = self.scenes[self.no_scene % 2](
-            self.largeur, self.hauteur
-        )
+        self.scene_courante = self.scenes[self.no_scene % 2]()
 
     def jouer(self) -> None:
         """Lance le jeu"""
@@ -53,7 +51,7 @@ class Fenetre:
                     return
 
             # affichage
-            self.scene_courante.affiche_scene(self.fenetre)
+            self.scene_courante.affiche_scene()
             pygame.display.flip()
             self.clock.tick(60)
 
