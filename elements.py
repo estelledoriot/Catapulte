@@ -28,7 +28,7 @@ class Personnage(pygame.sprite.Sprite):
         self.en_mouvement: bool = False
 
         self.image_initiale: pygame.Surface = pygame.image.load(
-            "singe.png"
+            "images/singe.png"
         ).convert_alpha()
         self.image_initiale = pygame.transform.scale_by(
             self.image_initiale, taille / self.image_initiale.get_width()
@@ -120,7 +120,7 @@ class Vies:
 
     def __init__(self, vies_max: int) -> None:
         self.vies: int = vies_max
-        self.image = pygame.image.load("heart.png").convert_alpha()
+        self.image = pygame.image.load("images/heart.png").convert_alpha()
         self.image = pygame.transform.scale_by(
             self.image, 30 / self.image.get_width()
         )

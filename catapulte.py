@@ -25,18 +25,26 @@ class Fenetre:
             (self.largeur, self.hauteur)
         )
         pygame.display.set_caption("Catapulte")
-        pygame.display.set_icon(pygame.image.load("catapult.png"))
+        pygame.display.set_icon(pygame.image.load("images/catapult.png"))
 
         # état
-        self.scenes: list = [Partie, Fin]
         self.scene_courante: Scene = Partie()
-        self.no_scene: int = 0
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
     def scene_suivante(self):
         """Passe à la scène suivante"""
-        self.no_scene += 1
-        self.scene_courante = self.scenes[self.no_scene % 2]()
+        if isinstance(self.scene_courante, Fin):
+            self.scene_courante = Partie()
+        elif (
+            isinstance(self.scene_courante, Partie)
+            and self.scene_courante.perdu
+        ):
+            self.scene_courante = Fin(False)
+        elif (
+            isinstance(self.scene_courante, Partie)
+            and self.scene_courante.gagne
+        ):
+            self.scene_courante = Fin(True)
 
     def jouer(self) -> None:
         """Lance le jeu"""
