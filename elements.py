@@ -1,5 +1,5 @@
 """
-Contient les éléments du jeu: Personnages, objets, fonds
+Contient les éléments du jeu: Personnages, objets, vies
 """
 
 from math import cos, radians, sin
