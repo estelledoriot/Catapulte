@@ -102,8 +102,6 @@ class Partie:
 class Fin:
     """Scène de fin"""
 
-    # TODO distinguer victoire/défaite
-
     def __init__(self, victoire: bool) -> None:
         largeur, hauteur = pygame.display.get_window_size()
 
@@ -124,14 +122,22 @@ class Fin:
         fenetre = pygame.display.get_surface()
         largeur, _ = pygame.display.get_window_size()
 
-        blanc = pygame.Color(255, 255, 255)
-        jaune = pygame.Color(255, 255, 0)
-        noir = pygame.Color(0, 0, 0)
-
         fenetre.blit(self.decors.image, self.decors.rect)
-        self.message_fin.affiche(blanc, largeur // 2, 150)
-        couleur = jaune if self.bouton_rejouer.touche_souris() else blanc
-        self.bouton_rejouer.affiche(couleur, noir, largeur // 2, 400)
+        couleur_message = pygame.Color(255, 255, 255)
+        self.message_fin.affiche(couleur_message, largeur // 2, 150)
+        couleur_texte = (
+            pygame.Color(101, 172, 171)
+            if self.bouton_rejouer.touche_souris()
+            else pygame.Color(240, 240, 240)
+        )
+        couleur_fond = (
+            pygame.Color(80, 80, 80)
+            if self.bouton_rejouer.touche_souris()
+            else pygame.Color(50, 50, 50)
+        )
+        self.bouton_rejouer.affiche(
+            couleur_texte, couleur_fond, largeur // 2, 400
+        )
 
     def joue_tour(self) -> None:
         """Rien"""
