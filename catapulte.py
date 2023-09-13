@@ -31,7 +31,7 @@ class Fenetre:
         self.scene_courante: Scene = Partie()
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
-    def scene_suivante(self):
+    def scene_suivante(self) -> None:
         """Passe à la scène suivante"""
         if isinstance(self.scene_courante, Fin):
             self.scene_courante = Partie()
