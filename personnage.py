@@ -1,5 +1,5 @@
 """
-Contient les éléments du jeu: Personnages, objets, vies
+classe Personnage
 """
 
 from math import cos, radians, sin
@@ -85,57 +85,3 @@ class Personnage(pygame.sprite.Sprite):
         self.rect = self.image_initiale.get_rect()
         self.rect.center = self.depart
         self.en_mouvement = False
-
-
-class Objet(pygame.sprite.Sprite):
-    """Objet à attrapper
-    filename: fichier contenant l'image
-    centerx_depart, bottomy_depart: position initiale de l'objet
-    largeur_objet: largeur de l'objet
-    """
-
-    def __init__(
-        self,
-        filename: str,
-        centerx_depart: int,
-        bottomy_depart: int,
-        largeur_objet: int,
-    ) -> None:
-        super().__init__()
-
-        self.image: pygame.Surface = pygame.image.load(
-            filename
-        ).convert_alpha()
-        self.image = pygame.transform.scale_by(
-            self.image, largeur_objet / self.image.get_width()
-        )
-
-        self.rect: pygame.Rect = self.image.get_rect(
-            midbottom=(centerx_depart, bottomy_depart)
-        )
-
-
-class Vies:
-    """Gestion des vies"""
-
-    def __init__(self, vies_max: int) -> None:
-        self.vies: int = vies_max
-        self.image = pygame.image.load("images/heart.png").convert_alpha()
-        self.image = pygame.transform.scale_by(
-            self.image, 30 / self.image.get_width()
-        )
-
-    def perd(self, nombre: int) -> None:
-        """Perd des vies"""
-        self.vies -= nombre
-
-    def affiche(self, x: int, y: int) -> None:
-        """Affiche les vies"""
-        fenetre = pygame.display.get_surface()
-        for i in range(self.vies):
-            fenetre.blit(self.image, (x + i * (self.image.get_width() + 5), y))
-
-    @property
-    def mort(self) -> bool:
-        """Détermine si le personnage est mort"""
-        return self.vies == 0

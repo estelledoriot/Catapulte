@@ -6,8 +6,11 @@ from typing import Protocol
 
 import pygame
 
-from elements import Objet, Personnage, Vies
-from texte import Bouton, Message
+from bouton import Bouton
+from objet import Objet
+from personnage import Personnage
+from texte import Texte
+from vies import Vies
 
 
 class Scene(Protocol):
@@ -108,13 +111,13 @@ class Fin:
         self.decors: Objet = Objet(
             "images/jungle.png", largeur // 2, hauteur, largeur
         )
-        self.message_fin: Message = (
-            Message("Gagné !", "font/Avdira.otf", 100)
+        self.message_fin: Texte = (
+            Texte("Gagné !", "font/Avdira.otf", 100)
             if victoire
-            else Message("Perdu ...", "font/Avdira.otf", 100)
+            else Texte("Perdu ...", "font/Avdira.otf", 100)
         )
         self.bouton_rejouer: Bouton = Bouton(
-            Message("Rejouer", "font/Avdira.otf", 50)
+            Texte("Rejouer", "font/Avdira.otf", 50)
         )
 
     def affiche_scene(self) -> None:
