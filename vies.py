@@ -19,7 +19,7 @@ class Vies:
         """Perd des vies"""
         self.vies -= nombre
 
-    def affiche(self, x: int, y: int) -> None:
+    def draw(self, x: int, y: int) -> None:
         """Affiche les vies"""
         fenetre = pygame.display.get_surface()
         for i in range(self.vies):

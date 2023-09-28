@@ -25,7 +25,7 @@ class Texte:
         self.surface = self.police.render(self.texte, True, couleur)
         self.rect = self.surface.get_rect(center=(centerx, centery))
 
-    def affiche(
+    def draw(
         self,
         couleur: pygame.Color,
         centerx: int,

@@ -16,7 +16,7 @@ class Bouton:
         self.message: Texte = message
         self.bouton: pygame.Rect = pygame.Rect(0, 0, 0, 0)
 
-    def affiche(
+    def draw(
         self,
         couleur: pygame.Color,
         couleur_fond: pygame.Color,
@@ -29,7 +29,7 @@ class Bouton:
         self.bouton = self.message.rect.inflate(15, 15)
         self.bouton.center = (centerx, centery)
         pygame.draw.rect(fenetre, couleur_fond, self.bouton, border_radius=20)
-        self.message.affiche(couleur, centerx, centery)
+        self.message.draw(couleur, centerx, centery)
 
     def touche_souris(self) -> bool:
         """Détermine si la souris touche le bouton"""

@@ -73,7 +73,7 @@ class Partie:
         self.bananes.draw(fenetre)
         fenetre.blit(self.catapulte.image, self.catapulte.rect)
         fenetre.blit(self.singe.image, self.singe.rect)
-        self.vies.affiche(20, 20)
+        self.vies.draw(20, 20)
 
     def joue_tour(self) -> None:
         """Joue un tour du jeu"""
@@ -143,7 +143,7 @@ class Fin:
 
         fenetre.blit(self.decors.image, self.decors.rect)
         couleur_message = pygame.Color(255, 255, 255)
-        self.message_fin.affiche(couleur_message, largeur // 2, 150)
+        self.message_fin.draw(couleur_message, largeur // 2, 150)
         couleur_texte = (
             pygame.Color(101, 172, 171)
             if self.bouton_rejouer.touche_souris()
@@ -154,7 +154,7 @@ class Fin:
             if self.bouton_rejouer.touche_souris()
             else pygame.Color(50, 50, 50)
         )
-        self.bouton_rejouer.affiche(
+        self.bouton_rejouer.draw(
             couleur_texte, couleur_fond, largeur // 2, 400
         )
 
