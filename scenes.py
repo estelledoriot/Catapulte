@@ -135,6 +135,7 @@ class Fin:
             "sounds/pop.wav"
         )
         self.son_bouton.set_volume(0.25)
+        self.next: bool = False
 
     def affiche_scene(self) -> None:
         """Affiche la scène de fin"""
@@ -160,9 +161,11 @@ class Fin:
 
     def joue_tour(self) -> None:
         """Rien"""
-        if self.passe_suivant():
-            self.son_bouton.play()
+        for _ in pygame.event.get(pygame.MOUSEBUTTONDOWN):
+            if self.bouton_rejouer.touche_souris():
+                self.son_bouton.play()
+                self.next = True
 
     def passe_suivant(self) -> bool:
         """Vérifie si le bouton rejouer est cliqué"""
-        return self.bouton_rejouer.est_clique()
+        return self.next
