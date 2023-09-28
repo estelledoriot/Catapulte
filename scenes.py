@@ -56,6 +56,8 @@ class Partie:
 
         self.points: int = 0
         self.vies: Vies = Vies(5)
+        self.son: pygame.mixer.Sound = pygame.mixer.Sound("sounds/Glug.wav")
+        self.son.set_volume(0.25)
 
     def affiche_scene(self) -> None:
         """Affiche les éléments du jeu"""
@@ -80,6 +82,7 @@ class Partie:
 
         # collision avec une banane
         if pygame.sprite.spritecollide(self.singe, self.bananes, True):
+            self.son.play()
             self.points += 1
 
         # fin de catapultage
@@ -120,6 +123,19 @@ class Fin:
             Texte("Rejouer", "font/Avdira.otf", 50)
         )
 
+        self.son_fin: pygame.mixer.Sound = (
+            pygame.mixer.Sound("sounds/win.wav")
+            if victoire
+            else pygame.mixer.Sound("sounds/lose.mp3")
+        )
+        self.son_fin.set_volume(0.25 if victoire else 0.5)
+        self.son_fin.play()
+
+        self.son_bouton: pygame.mixer.Sound = pygame.mixer.Sound(
+            "sounds/pop.wav"
+        )
+        self.son_bouton.set_volume(0.25)
+
     def affiche_scene(self) -> None:
         """Affiche la scène de fin"""
         fenetre = pygame.display.get_surface()
@@ -144,6 +160,8 @@ class Fin:
 
     def joue_tour(self) -> None:
         """Rien"""
+        if self.passe_suivant():
+            self.son_bouton.play()
 
     def passe_suivant(self) -> bool:
         """Vérifie si le bouton rejouer est cliqué"""

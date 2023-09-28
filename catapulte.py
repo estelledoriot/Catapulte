@@ -5,14 +5,12 @@
     - tu as 5 essais maximum pour réussir
 """
 
-# TODO: ajout sons
-
 import pygame
 
 from scenes import Fin, Partie, Scene
 
 
-class Fenetre:
+class Jeu:
     """Jeu"""
 
     def __init__(self) -> None:
@@ -65,6 +63,6 @@ class Fenetre:
 
 
 if __name__ == "__main__":
-    jeu = Fenetre()
+    jeu = Jeu()
     jeu.jouer()
     pygame.quit()
