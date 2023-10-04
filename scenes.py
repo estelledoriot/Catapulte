@@ -6,11 +6,11 @@ from typing import Protocol
 
 import pygame
 
-from bouton import Bouton
-from objet import Objet
-from personnage import Personnage
-from texte import Texte
-from vies import Vies
+from button import Button
+from lives import Lives
+from monkey import Monkey
+from object import Object
+from text import Text
 
 
 class Scene(Protocol):
@@ -32,11 +32,13 @@ class Partie:
     def __init__(self) -> None:
         largeur, hauteur = pygame.display.get_window_size()
 
-        self.decors: Objet = Objet(
-            "images/jungle.png", largeur // 2, hauteur, largeur
+        self.decors: Object = Object(
+            "images/jungle.png", (largeur // 2, hauteur), largeur
         )
-        self.catapulte: Objet = Objet("images/catapulte.png", 120, 560, 400)
-        self.singe: Personnage = Personnage(150, 280, 40, 10)
+        self.catapulte: Object = Object(
+            "images/catapulte.png", (120, 560), 400
+        )
+        self.singe: Monkey = Monkey((150, 280), 40, 10)
         self.bananes: pygame.sprite.Group = pygame.sprite.Group()
         self.pilliers: list[pygame.Rect] = []
 
@@ -46,16 +48,15 @@ class Partie:
             rectangle.bottom = 550
             self.pilliers.append(rectangle)
             self.bananes.add(
-                Objet(
+                Object(
                     "images/banane.png",
-                    rectangle.centerx,
-                    rectangle.top - 5,
+                    (rectangle.centerx, rectangle.top - 5),
                     30,
                 )
             )
 
         self.points: int = 0
-        self.vies: Vies = Vies(5)
+        self.vies: Lives = Lives(5, (20, 20))
         self.son: pygame.mixer.Sound = pygame.mixer.Sound("sounds/Glug.wav")
         self.son.set_volume(0.25)
 
@@ -73,12 +74,13 @@ class Partie:
         self.bananes.draw(fenetre)
         fenetre.blit(self.catapulte.image, self.catapulte.rect)
         fenetre.blit(self.singe.image, self.singe.rect)
-        self.vies.draw(20, 20)
+        fenetre.blit(self.vies.image, self.vies.rect)
 
     def joue_tour(self) -> None:
         """Joue un tour du jeu"""
+        largeur, hauteur = pygame.display.get_window_size()
         # déplacements du songe
-        self.singe.deplace_personnage()
+        self.singe.update()
 
         # collision avec une banane
         if pygame.sprite.spritecollide(self.singe, self.bananes, True):
@@ -86,9 +88,11 @@ class Partie:
             self.points += 1
 
         # fin de catapultage
-        if self.singe.sort_fenetre():
-            self.singe.revient_depart()
-            self.vies.perd(1)
+        if self.singe.is_out_screen(largeur, hauteur):
+            self.singe.goto_start()
+            self.vies.lose(1)
+
+        self.vies.update()
 
     def passe_suivant(self) -> bool:
         """Renvoie si la partie est terminée"""
@@ -97,7 +101,7 @@ class Partie:
     @property
     def perdu(self) -> bool:
         """Partie perdue"""
-        return self.vies.mort
+        return self.vies.is_dead
 
     @property
     def gagne(self) -> bool:
@@ -111,16 +115,14 @@ class Fin:
     def __init__(self, victoire: bool) -> None:
         largeur, hauteur = pygame.display.get_window_size()
 
-        self.decors: Objet = Objet(
-            "images/jungle.png", largeur // 2, hauteur, largeur
+        self.decors: Object = Object(
+            "images/jungle.png", (largeur // 2, hauteur), largeur
         )
-        self.message_fin: Texte = (
-            Texte("Gagné !", "font/Avdira.otf", 100)
-            if victoire
-            else Texte("Perdu ...", "font/Avdira.otf", 100)
+        self.message_fin: Text = Text(
+            "Gagné !" if victoire else "Perdu ...", (largeur // 2, 150)
         )
-        self.bouton_rejouer: Bouton = Bouton(
-            Texte("Rejouer", "font/Avdira.otf", 50)
+        self.bouton_rejouer: Button = Button(
+            "Rejouer", (250, 80), (largeur // 2, 400)
         )
 
         self.son_fin: pygame.mixer.Sound = (
@@ -140,29 +142,15 @@ class Fin:
     def affiche_scene(self) -> None:
         """Affiche la scène de fin"""
         fenetre = pygame.display.get_surface()
-        largeur, _ = pygame.display.get_window_size()
-
         fenetre.blit(self.decors.image, self.decors.rect)
-        couleur_message = pygame.Color(255, 255, 255)
-        self.message_fin.draw(couleur_message, largeur // 2, 150)
-        couleur_texte = (
-            pygame.Color(101, 172, 171)
-            if self.bouton_rejouer.touche_souris()
-            else pygame.Color(240, 240, 240)
-        )
-        couleur_fond = (
-            pygame.Color(80, 80, 80)
-            if self.bouton_rejouer.touche_souris()
-            else pygame.Color(50, 50, 50)
-        )
-        self.bouton_rejouer.draw(
-            couleur_texte, couleur_fond, largeur // 2, 400
-        )
+        fenetre.blit(self.message_fin.image, self.message_fin.rect)
+        fenetre.blit(self.bouton_rejouer.image, self.bouton_rejouer.rect)
 
     def joue_tour(self) -> None:
         """Rien"""
+        self.bouton_rejouer.update()
         for _ in pygame.event.get(pygame.MOUSEBUTTONDOWN):
-            if self.bouton_rejouer.touche_souris():
+            if self.bouton_rejouer.touch_mouse():
                 self.son_bouton.play()
                 self.next = True
 
