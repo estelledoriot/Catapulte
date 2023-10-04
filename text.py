@@ -15,7 +15,7 @@ class Text(pygame.sprite.Sprite):
         super().__init__()
         self.font: pygame.font.Font = pygame.font.Font("font/Avdira.otf", 100)
         self.text: str = text
-        self.color: pygame.Color = pygame.Color(169, 70, 55)
+        self.color: pygame.Color = pygame.Color(255, 255, 255)
         self.image: pygame.Surface = self.font.render(
             self.text, True, self.color
         )

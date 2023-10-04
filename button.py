@@ -20,7 +20,7 @@ class Button(pygame.sprite.Sprite):
         self.text: str = text
         self.text_color: tuple[pygame.Color, pygame.Color] = (
             pygame.Color(240, 240, 240),
-            pygame.Color(255, 255, 255),
+            pygame.Color(101, 172, 171),
         )
         self.background_color: tuple[pygame.Color, pygame.Color] = (
             pygame.Color(50, 50, 50),

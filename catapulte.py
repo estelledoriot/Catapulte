@@ -7,62 +7,52 @@
 
 import pygame
 
-from scenes import Fin, Partie, Scene
+from game import Game, Stage
 
 
-class Jeu:
+class Catapulte:
     """Jeu"""
 
     def __init__(self) -> None:
         pygame.init()
 
         # fenêtre
-        self.largeur: int = 850
-        self.hauteur: int = 565
-        self.fenetre: pygame.Surface = pygame.display.set_mode(
-            (self.largeur, self.hauteur)
+        self.width: int = 850
+        self.height: int = 565
+        self.screen: pygame.Surface = pygame.display.set_mode(
+            (self.width, self.height)
         )
         pygame.display.set_caption("Catapulte")
         pygame.display.set_icon(pygame.image.load("images/catapult.png"))
 
         # état
-        self.scene_courante: Scene = Partie()
+        self.game: Game = Game(self.width, self.height)
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
-    def scene_suivante(self) -> None:
-        """Passe à la scène suivante"""
-        if isinstance(self.scene_courante, Fin):
-            self.scene_courante = Partie()
-        elif (
-            isinstance(self.scene_courante, Partie)
-            and self.scene_courante.perdu
-        ):
-            self.scene_courante = Fin(False)
-        elif (
-            isinstance(self.scene_courante, Partie)
-            and self.scene_courante.gagne
-        ):
-            self.scene_courante = Fin(True)
-
-    def jouer(self) -> None:
+    def run(self) -> None:
         """Lance le jeu"""
         while True:
-            self.scene_courante.joue_tour()
-            if self.scene_courante.passe_suivant():
-                self.scene_suivante()
+            if self.game.stage == Stage.TERMINATE:
+                self.game = Game(self.width, self.height)
+
+            if self.game.stage == Stage.RUNNING:
+                self.game.run_game()
+                self.game.draw_game(self.screen)
+
+            if self.game.stage == Stage.END:
+                self.game.run_end()
+                self.game.draw_end(self.screen)
 
             # quitter
             for evenement in pygame.event.get():
                 if evenement.type == pygame.QUIT:
                     return
 
-            # affichage
-            self.scene_courante.affiche_scene()
             pygame.display.flip()
             self.clock.tick(60)
 
 
 if __name__ == "__main__":
-    jeu = Jeu()
-    jeu.jouer()
+    jeu = Catapulte()
+    jeu.run()
     pygame.quit()
