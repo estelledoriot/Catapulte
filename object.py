@@ -2,7 +2,6 @@
 Contient les éléments du jeu: Personnages, objets, vies
 """
 
-
 import pygame
 
 

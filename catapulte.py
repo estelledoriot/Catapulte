@@ -1,8 +1,8 @@
 """Jeu de catapulte
-    - tourne le personnage en utilisant les flèches directionnelles
-    - appuie sur la touche espace pour catapulter le personnage
-    - attrape toutes les bananes pour gagner
-    - tu as 5 essais maximum pour réussir
+- tourne le personnage en utilisant les flèches directionnelles
+- appuie sur la touche espace pour catapulter le personnage
+- attrape toutes les bananes pour gagner
+- tu as 5 essais maximum pour réussir
 """
 
 import pygame
